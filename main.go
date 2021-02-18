@@ -51,12 +51,14 @@ func main() {
 	})
 
 	flag.Parse()
+	if len(hexColors) > 0 {
+		defaultPalette.Special["background"] = hexColors[0]
+		defaultPalette.Colors["color0"] = hexColors[0]
 
-	defaultPalette.Special["background"] = hexColors[0]
-	defaultPalette.Colors["color0"] = hexColors[0]
-	for i := 1; i < len(hexColors); i++ {
-		defaultPalette.Colors[fmt.Sprintf("color%d", i)] = hexColors[i]
-		defaultPalette.Colors[fmt.Sprintf("color%d", i+8)] = hexColors[i]
+		for i := 1; i < len(hexColors); i++ {
+			defaultPalette.Colors[fmt.Sprintf("color%d", i)] = hexColors[i]
+			defaultPalette.Colors[fmt.Sprintf("color%d", i+8)] = hexColors[i]
+		}
 	}
 
 	jsonOutput, err := json.Marshal(defaultPalette)
