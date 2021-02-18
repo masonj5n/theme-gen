@@ -8,7 +8,7 @@ color2, color3, etc.
 
 When you have your palette picked, just copy the end of the url that has the 7 colors in hex format separated by hyphens. For example, if I wanted
 the color palette https://coolors.co/312f2f-84dccf-a6d9f7-bccce0-bf98a0-b48291-fa9f42, I would copy `312f2f-84dccf-a6d9f7-bccce0-bf98a0-b48291-fa9f42`
-and use it as the value for the `-p` flag to `gen-theme`.
+and use it as the value for the `-p` flag to `theme-gen`.
 
 `theme-gen -p 312f2f-84dccf-a6d9f7-bccce0-bf98a0-b48291-fa9f42`
 
