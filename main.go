@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -16,24 +18,24 @@ type Palette struct {
 }
 
 var defaultPalette Palette = Palette{
-	Special: map[string]string{"background": "#283618", "foreground": "#FFFFFF", "cursor": "#FFFFFF"},
+	Special: map[string]string{"background": "#1F1F1F", "foreground": "#FFFFFF", "cursor": "#FFFFFF"},
 	Colors: map[string]string{
-		"color0":  "#283618",
-		"color1":  "#AA6122",
-		"color2":  "#9AAB5F",
-		"color3":  "#606C38",
-		"color4":  "#DDA15E",
-		"color5":  "#BC6C25",
-		"color6":  "#C27939",
+		"color0":  "#1F1F1F",
+		"color1":  "#C87004",
+		"color10": "#FA900F",
+		"color11": "#FA900F",
+		"color12": "#796F67",
+		"color13": "#FFFFFF",
+		"color14": "#796F67",
+		"color15": "#FFFFFF",
+		"color2":  "#FA900F",
+		"color3":  "#FA900F",
+		"color4":  "#796F67",
+		"color5":  "#FFFFFF",
+		"color6":  "#796F67",
 		"color7":  "#FFFFFF",
 		"color8":  "#AAAAAA",
-		"color9":  "#AA6122",
-		"color10": "#9AAB5F",
-		"color11": "#606C38",
-		"color12": "#DDA15E",
-		"color13": "#BC6C25",
-		"color14": "#C27939",
-		"color15": "#FFFFFF"},
+		"color9":  "#C87004"},
 }
 
 func main() {
@@ -50,7 +52,19 @@ func main() {
 		return nil
 	})
 
+	filename := flag.String("f", "default.json", "Specify the name of the theme file (including .json at the end)")
+
+	light := flag.Bool("l", false, "Specify that the palette has a light background, omit if using a dark background")
+
 	flag.Parse()
+
+	if *light {
+		defaultPalette.Special["cursor"] = "#000000"
+		defaultPalette.Special["foreground"] = "#000000"
+		defaultPalette.Colors["color7"] = "#000000"
+		defaultPalette.Colors["color15"] = "#000000"
+	}
+
 	if len(hexColors) > 0 {
 		defaultPalette.Special["background"] = hexColors[0]
 		defaultPalette.Colors["color0"] = hexColors[0]
@@ -64,7 +78,60 @@ func main() {
 	jsonOutput, err := json.Marshal(defaultPalette)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error marshaling palette into json")
+		return
 	}
 
-	fmt.Println(string(jsonOutput))
+	err = writeThemeFile(jsonOutput, *filename)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating theme file:", err)
+	}
+
+	err = applyTheme(*filename)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error applying theme:", err)
+	}
+
+}
+
+func writeThemeFile(jsonBytes []byte, filename string) error {
+
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("Error looking up home dir: %v", err)
+	}
+	fullThemePath := filepath.Join(homedir, ".config/walthemes")
+	err = os.MkdirAll(fullThemePath, 0777)
+	if err != nil {
+		return fmt.Errorf("Error creating ~/.config/walthemes/ directory: %v", err)
+	}
+
+	err = os.WriteFile(filepath.Join(fullThemePath, filename), jsonBytes, 0644)
+	if err != nil {
+		return fmt.Errorf("Error creating/writing theme file: %v", err)
+	}
+
+	return nil
+}
+
+// applyTheme takes the filename of a theme file residing
+// in .config/walthemes/ and runs the wal command to apply it.
+func applyTheme(filename string) error {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("Error getting home directory: %v", err)
+	}
+
+	fullFilePath := filepath.Join(homedir, ".config/walthemes", filename)
+
+	walcmd := exec.Command("wal", "--theme", fullFilePath)
+
+	walcmd.Stdout = os.Stdout
+	walcmd.Stderr = os.Stderr
+
+	err = walcmd.Run()
+	if err != nil {
+		return fmt.Errorf("Error running wal cmd: %v", err)
+	}
+
+	return nil
 }
