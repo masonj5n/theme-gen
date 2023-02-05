@@ -3,7 +3,7 @@ theme-gen takes a 7 color palette (with the first color being the background) fr
 a json file suitable for use with [pywal](https://github.com/dylanaraps/pywal), then applies that theme using `wal`.
 
 ## Example Usage
-Head over to [coolors.co](https://coolors.io) and pick a 7 color palette. The first color will be the background, the subsequent 6 will represent color1
+Head over to [coolors.co](https://coolors.co) and pick a 7 color palette. The first color will be the background, the subsequent 6 will represent color1
 color2, color3, etc.
 
 When you have your palette picked, just copy the end of the url that has the 7 colors in hex format separated by hyphens. For example, if I wanted
