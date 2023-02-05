@@ -1,5 +1,5 @@
 # theme-gen
-theme-gen takes a 7 color palette (with the first color being the background) from [coolors.co](https://coolors.io) and generates
+theme-gen takes a 7 color palette (with the first color being the background) from [coolors.co](https://coolors.co) and generates
 a json file suitable for use with [pywal](https://github.com/dylanaraps/pywal), then applies that theme using `wal`.
 
 ## Example Usage
